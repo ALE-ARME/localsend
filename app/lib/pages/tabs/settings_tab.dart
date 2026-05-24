@@ -34,22 +34,25 @@ import 'package:routerino/routerino.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsTab extends StatelessWidget {
-  const SettingsTab();
+  final bool showAppBar;
+  const SettingsTab({this.showAppBar = false, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder(
+    final Widget content = ViewModelBuilder(
       provider: settingsTabControllerProvider,
       builder: (context, vm) {
         final ref = context.ref;
         return ResponsiveListView(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: showAppBar ? 10 : 40),
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Text(t.settingsTab.title, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
-            ),
-            const SizedBox(height: 30),
+            if (!showAppBar) ...[
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(t.settingsTab.title, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+              ),
+              const SizedBox(height: 30),
+            ],
             _SettingsSection(
               title: t.settingsTab.general.title,
               children: [
@@ -565,6 +568,16 @@ class SettingsTab extends StatelessWidget {
         );
       },
     );
+
+    if (showAppBar) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(t.settingsTab.title),
+        ),
+        body: content,
+      );
+    }
+    return content;
   }
 }
 

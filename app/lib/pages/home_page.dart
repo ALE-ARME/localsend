@@ -3,12 +3,9 @@ import 'dart:io';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:localsend_app/config/init.dart';
-import 'package:localsend_app/config/theme.dart';
 import 'package:localsend_app/gen/strings.g.dart';
 import 'package:localsend_app/pages/home_page_controller.dart';
-import 'package:localsend_app/pages/tabs/receive_tab.dart';
-import 'package:localsend_app/pages/tabs/send_tab.dart';
-import 'package:localsend_app/pages/tabs/settings_tab.dart';
+import 'package:localsend_app/pages/tabs/unified_tab.dart';
 import 'package:localsend_app/provider/selection/selected_sending_files_provider.dart';
 import 'package:localsend_app/util/native/cross_file_converters.dart';
 import 'package:localsend_app/widget/responsive_builder.dart';
@@ -37,9 +34,6 @@ enum HomeTab {
 
 class HomePage extends StatefulWidget {
   final HomeTab initialTab;
-
-  /// It is important for the initializing step
-  /// because the first init clears the cache
   final bool appStart;
 
   const HomePage({
@@ -97,78 +91,26 @@ class _HomePageState extends State<HomePage> with Refena {
       child: ResponsiveBuilder(
         builder: (sizingInformation) {
           return Scaffold(
-            body: Row(
+            body: Stack(
               children: [
-                if (!sizingInformation.isMobile)
-                  NavigationRail(
-                    selectedIndex: vm.currentTab.index,
-                    onDestinationSelected: (index) => vm.changeTab(HomeTab.values[index]),
-                    extended: sizingInformation.isDesktop,
-                    backgroundColor: Theme.of(context).cardColorWithElevation,
-                    leading: sizingInformation.isDesktop
-                        ? const Column(
-                            children: [
-                              SizedBox(height: 20),
-                              Text(
-                                'LocalSend',
-                                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          )
-                        : null,
-                    destinations: HomeTab.values.map((tab) {
-                      return NavigationRailDestination(
-                        icon: Icon(tab.icon),
-                        label: Text(tab.label),
-                      );
-                    }).toList(),
-                  ),
-                Expanded(
-                  child: SafeArea(
-                    left: sizingInformation.isMobile,
-                    child: Stack(
+                const SafeArea(child: UnifiedTab()),
+                if (_dragAndDropIndicator)
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        PageView(
-                          controller: vm.controller,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: const [
-                            ReceiveTab(),
-                            SendTab(),
-                            SettingsTab(),
-                          ],
-                        ),
-                        if (_dragAndDropIndicator)
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.file_download, size: 128),
-                                const SizedBox(height: 30),
-                                Text(t.sendTab.placeItems, style: Theme.of(context).textTheme.titleLarge),
-                              ],
-                            ),
-                          ),
+                        const Icon(Icons.file_download, size: 128),
+                        const SizedBox(height: 30),
+                        Text(t.sendTab.placeItems, style: Theme.of(context).textTheme.titleLarge),
                       ],
                     ),
                   ),
-                ),
               ],
             ),
-            bottomNavigationBar: sizingInformation.isMobile
-                ? NavigationBar(
-                    selectedIndex: vm.currentTab.index,
-                    onDestinationSelected: (index) => vm.changeTab(HomeTab.values[index]),
-                    destinations: HomeTab.values.map((tab) {
-                      return NavigationDestination(icon: Icon(tab.icon), label: tab.label);
-                    }).toList(),
-                  )
-                : null,
           );
         },
       ),
