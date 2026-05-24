@@ -39,6 +39,7 @@ class ChangeTabAction extends ReduxAction<HomePageController, HomePageVm> {
   @override
   HomePageVm reduce() {
     if (tab == HomeTab.settings) {
+      // ignore: discarded_futures
       Routerino.context.push(() => const SettingsTab(showAppBar: true));
       return state;
     }
