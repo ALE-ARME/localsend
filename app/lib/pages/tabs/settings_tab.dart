@@ -600,6 +600,8 @@ class SettingsTab extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+          ],
         );
       },
     );
