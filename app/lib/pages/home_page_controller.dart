@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:localsend_app/pages/home_page.dart';
+import 'package:localsend_app/pages/tabs/settings_tab.dart';
 import 'package:refena_flutter/refena_flutter.dart';
+import 'package:routerino/routerino.dart';
 
 class HomePageVm {
   final PageController controller;
@@ -36,7 +38,13 @@ class ChangeTabAction extends ReduxAction<HomePageController, HomePageVm> {
 
   @override
   HomePageVm reduce() {
-    state.controller.jumpToPage(tab.index);
+    if (tab == HomeTab.settings) {
+      Routerino.context.push(() => const SettingsTab(showAppBar: true));
+      return state;
+    }
+    if (state.controller.hasClients) {
+      state.controller.jumpToPage(tab.index);
+    }
     return HomePageVm(
       controller: state.controller,
       currentTab: tab,

@@ -36,11 +36,12 @@ import 'package:routerino/routerino.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsTab extends StatelessWidget {
-  const SettingsTab();
+  final bool showAppBar;
+  const SettingsTab({this.showAppBar = false, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder(
+    final Widget content = ViewModelBuilder(
       provider: (ref) => settingsTabControllerProvider,
       builder: (context, vm) {
         final ref = context.ref;
@@ -51,9 +52,10 @@ class SettingsTab extends StatelessWidget {
                 right: MediaQuery.of(context).padding.right,
               ), // So camera or 3-button navigation doesn't interfere on the right, rest is handled
               child: ResponsiveListView(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: showAppBar ? 10 : 40),
                 children: [
-                  SizedBox(height: 30 + MediaQuery.of(context).padding.top),
+                  if (!showAppBar)
+                    SizedBox(height: 30 + MediaQuery.of(context).padding.top),
                   _SettingsSection(
                     title: t.settingsTab.general.title,
                     children: [
@@ -598,11 +600,19 @@ class SettingsTab extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
         );
       },
     );
+
+    if (showAppBar) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(t.settingsTab.title),
+        ),
+        body: content,
+      );
+    }
+    return content;
   }
 }
 

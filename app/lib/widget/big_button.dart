@@ -10,19 +10,21 @@ class BigButton extends StatelessWidget {
   final String label;
   final bool filled;
   final VoidCallback onTap;
+  final double? width;
 
   const BigButton({
     required this.icon,
     required this.label,
     required this.filled,
     required this.onTap,
+    this.width,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final sizingInformation = SizingInformation(MediaQuery.sizeOf(context).width);
-    final buttonWidth = sizingInformation.isDesktop ? desktopWidth : mobileWidth;
+    final buttonWidth = width ?? (sizingInformation.isDesktop ? desktopWidth : mobileWidth);
     return SizedBox(
       width: buttonWidth,
       height: 65.0,
